@@ -1,5 +1,6 @@
 package com.example.caatulgupta.todo;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     ArrayList<ToDo> toDos = new ArrayList<>();
     int posToDel = 0;
+    long id;
     ToDoAdapter adapter;
 //    View alertView = findViewById(R.id.alert);
     EditText etTitle, etDesc;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ToDo toDo = toDos.get(i);
+                final ToDo toDo = toDos.get(i);
                 final int pos = i;
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -88,6 +90,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                        ToDoOpenHelper openHelper = new ToDoOpenHelper(MainActivity.this);
+                        SQLiteDatabase database = openHelper.getWritableDatabase();
+                        String[] selectionArgs = {toDo.getId()+""};
+                        database.delete(Contract.TODO.TABLE_NAME,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
+
+
+
                         toDos.remove(pos);
                         adapter.notifyDataSetChanged();
                         Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_LONG).show();
@@ -116,7 +127,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
             String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
 
+            long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
+
             ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+
+            toDo.setId(id);
+
             toDos.add(toDo);
         }
 
@@ -262,8 +278,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             contentValues.put(Contract.TODO.COLUMN_TIME,toDo.getTime());
             contentValues.put(Contract.TODO.COLUMN_DTCREATED,toDo.getDtCreated());
 
-            database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
-
+            long id = database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
+            toDo.setId(id);
             toDos.add(toDo);
 
             /*
@@ -301,6 +317,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
             toDos.set(posToDel,toDo);
 
+
+            ToDoOpenHelper openHelper = new ToDoOpenHelper(this);
+            SQLiteDatabase database = openHelper.getWritableDatabase();
+            String[] selectionArgs = {id+""};
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Contract.TODO.COLUMN_TITLE,toDo.getTitle());
+            contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,toDo.getDescription());
+            contentValues.put(Contract.TODO.COLUMN_DATE,toDo.getDate());
+            contentValues.put(Contract.TODO.COLUMN_TIME,toDo.getTime());
+            contentValues.put(Contract.TODO.COLUMN_DTCREATED,toDo.getDtCreated());
+            database.update(Contract.TODO.TABLE_NAME,contentValues,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
+
 //            toDos.add(toDo);
 //            toDos.remove(posToDel);
 
@@ -319,8 +347,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra("Time",toDo.getTime());
         intent.putExtra("DTCreated",toDo.getDtCreated());
 
-
-
+        id = toDo.getId();
         posToDel = i;
 //        intent.putExtra("Time",toDo.getTime());
 //        intent.putExtra("Date",toDo.getDate());

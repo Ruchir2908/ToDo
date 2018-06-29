@@ -1,11 +1,21 @@
 package com.example.caatulgupta.todo;
 
 public class ToDo {
+
+    private long id;
     private String title;
     private String description;
     private String date;
     private String time;
     private String dtCreated;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getDtCreated() {
         return dtCreated;
