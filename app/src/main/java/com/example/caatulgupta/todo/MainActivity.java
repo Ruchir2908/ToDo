@@ -1,8 +1,12 @@
 package com.example.caatulgupta.todo;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,9 +34,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ToDoAdapter adapter;
 //    View alertView = findViewById(R.id.alert);
     EditText etTitle, etDesc;
+/*
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-
+*/
     Calendar newCalendar = Calendar.getInstance();
     int month = newCalendar.get(Calendar.MONTH);
     int year = newCalendar.get(Calendar.YEAR);
@@ -40,20 +45,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     int hour = newCalendar.get(Calendar.HOUR_OF_DAY);
     int min = newCalendar.get(Calendar.MINUTE);
 //    String dtCreated =  toString().valueOf(day)+"/"+toString().valueOf(month)+"/"+toString().valueOf(year)+" at "+toString().valueOf(hour)+":"+toString().valueOf(min);
-
+/*
     StringBuilder stringBuilderTitle = new StringBuilder();
     StringBuilder stringBuilderDesc = new StringBuilder();
     StringBuilder stringBuilderDate = new StringBuilder();
     StringBuilder stringBuilderTime = new StringBuilder();
     StringBuilder stringBuilderDTCreated = new StringBuilder();
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+/*
         sharedPreferences = getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
+*/
 //
 //        if(titles.size()!=0 && descs.size()!=0){
 //            for(int i=0;i<titles.size();i++){
@@ -99,7 +106,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
 
+        ToDoOpenHelper toDoOpenHelper = new ToDoOpenHelper(this);
+        SQLiteDatabase database = toDoOpenHelper.getReadableDatabase();
+        Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
+        while(cursor.moveToNext()){
+            String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+            String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+            String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+            String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+            String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
 
+            ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+            toDos.add(toDo);
+        }
+
+/*
         String title = sharedPreferences.getString("Title",null);
         String desc = sharedPreferences.getString("Desc",null);
         String date = sharedPreferences.getString("Date",null);
@@ -121,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
 
-
+*/
 
 
       /*  String t = "",d = "";
@@ -229,7 +250,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             String dtCreated = data.getStringExtra("DTCreated");
 
             ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+
+
+            ToDoOpenHelper openHelper = new ToDoOpenHelper(this);
+            SQLiteDatabase database = openHelper.getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Contract.TODO.COLUMN_TITLE,toDo.getTitle());
+            contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,toDo.getDescription());
+            contentValues.put(Contract.TODO.COLUMN_DATE,toDo.getDate());
+            contentValues.put(Contract.TODO.COLUMN_TIME,toDo.getTime());
+            contentValues.put(Contract.TODO.COLUMN_DTCREATED,toDo.getDtCreated());
+
+            database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
+
             toDos.add(toDo);
+
+            /*
             stringBuilderTitle = new StringBuilder();
             stringBuilderDesc = new StringBuilder();
             stringBuilderDate = new StringBuilder();
@@ -250,6 +287,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             editor.putString("Time",stringBuilderTime.toString());
             editor.putString("DTCreated",stringBuilderDTCreated.toString());
             editor.commit();
+
+           */
             adapter.notifyDataSetChanged();
         }
 
@@ -279,6 +318,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra("Date",toDo.getDate());
         intent.putExtra("Time",toDo.getTime());
         intent.putExtra("DTCreated",toDo.getDtCreated());
+
+
 
         posToDel = i;
 //        intent.putExtra("Time",toDo.getTime());
