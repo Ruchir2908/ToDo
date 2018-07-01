@@ -2,6 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/add" app:showAsAction="always" android:title="add" android:icon="@mipmap/add"/>
+    <item android:id="@+id/add" app:showAsAction="always" android:title="+" />
+
+    <item android:id="@+id/Filter" android:title="Sort By:">
+        <menu>
+            <item android:id="@+id/created" android:title="Created"/>
+
+            <item android:id="@+id/finish" android:title="Finish"/>
+
+            <item android:id="@+id/none" android:title="None"/>
+        </menu>
+    </item>
+
 
 </menu>

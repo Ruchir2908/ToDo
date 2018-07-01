@@ -2,7 +2,10 @@ package com.example.caatulgupta.todo;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.opengl.ETC1;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import java.util.Calendar;
 public class EditDetails extends AppCompatActivity {
 
     EditText titleET,descET,dateET,timeET;
+    long id;
 
     Calendar newCalendar = Calendar.getInstance();
     int month = newCalendar.get(Calendar.MONTH);
@@ -35,10 +39,25 @@ public class EditDetails extends AppCompatActivity {
         timeET = findViewById(R.id.timeEditText);
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra("Title");
-        String desc = intent.getStringExtra("Desc");
-        String date = intent.getStringExtra("Date");
-        String time = intent.getStringExtra("Time");
+//        String title = intent.getStringExtra("Title");
+//        String desc = intent.getStringExtra("Desc");
+//        String date = intent.getStringExtra("Date");
+//        String time = intent.getStringExtra("Time");
+
+
+        id = intent.getLongExtra("ID",0);
+        ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+        SQLiteDatabase database = openHelper.getReadableDatabase();
+        String[] selectionArgs = {id+""};
+        Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,Contract.TODO.COLUMN_ID+" = ?",selectionArgs,null,null,null);
+        cursor.moveToNext();
+        String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+        String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+        String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+        String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+        String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+
 
         titleET.setText(title);
         descET.setText(desc);
@@ -107,13 +126,25 @@ public class EditDetails extends AppCompatActivity {
         String desc = descET.getText().toString();
         String date = dateET.getText().toString();
         String time = timeET.getText().toString();
+        String dtCreated;
 
         Intent intent = new Intent();
-        intent.putExtra("Title",title);
-        intent.putExtra("Desc",desc);
-        intent.putExtra("Date",date);
-        intent.putExtra("Time",time);
+//        intent.putExtra("Title",title);
+//        intent.putExtra("Desc",desc);
+//        intent.putExtra("Date",date);
+//        intent.putExtra("Time",time);
 
+        ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+        SQLiteDatabase database = openHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Contract.TODO.COLUMN_TITLE,title);
+        contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,desc);
+        contentValues.put(Contract.TODO.COLUMN_DATE,date);
+        contentValues.put(Contract.TODO.COLUMN_TIME,time);
+//        contentValues.put(Contract.TODO.COLUMN_DTCREATED,dtCreated);
+        String[] selectionArgs = {id+""};
+        database.update(Contract.TODO.TABLE_NAME,contentValues,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
+        intent.putExtra("ID",id);
         setResult(4,intent);
         finish();
     }

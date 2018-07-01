@@ -3,11 +3,20 @@ package com.example.caatulgupta.todo;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 public class ToDoOpenHelper extends SQLiteOpenHelper {
 
+    private static ToDoOpenHelper instance;
 
-    public ToDoOpenHelper(Context context) {
+    public static ToDoOpenHelper getInstance(Context context){
+        if(instance==null){
+            instance = new ToDoOpenHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
+
+    private ToDoOpenHelper(Context context) {
         super(context,Contract.TODO.DATABSE_NAME,null,Contract.TODO.VERSION);
     }
 

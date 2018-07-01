@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     public void onClick(DialogInterface dialogInterface, int i) {
 
 
-                        ToDoOpenHelper openHelper = new ToDoOpenHelper(MainActivity.this);
+                        ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(MainActivity.this);
                         SQLiteDatabase database = openHelper.getWritableDatabase();
                         String[] selectionArgs = {toDo.getId()+""};
                         database.delete(Contract.TODO.TABLE_NAME,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
 
-        ToDoOpenHelper toDoOpenHelper = new ToDoOpenHelper(this);
+        ToDoOpenHelper toDoOpenHelper = ToDoOpenHelper.getInstance(this);
         SQLiteDatabase database = toDoOpenHelper.getReadableDatabase();
         Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
         while(cursor.moveToNext()){
@@ -130,12 +130,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
 
             ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
-
             toDo.setId(id);
-
             toDos.add(toDo);
-        }
 
+        }
+        cursor.close();
 /*
         String title = sharedPreferences.getString("Title",null);
         String desc = sharedPreferences.getString("Desc",null);
@@ -253,6 +252,73 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         }
+
+        if(item.getItemId()==R.id.created){
+            ArrayList<ToDo> toDos1 = toDos;
+            String dt = "";
+            ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+            SQLiteDatabase database = openHelper.getReadableDatabase();
+            Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,Contract.TODO.COLUMN_DTCREATED);
+            toDos.clear();
+            while(cursor.moveToNext()){
+                String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+                String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+                String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+                String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+                String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+                ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+
+                toDos.add(toDo);
+
+                adapter.notifyDataSetChanged();
+
+            }
+//            toDos = toDos1;
+
+        }else if(item.getItemId()==R.id.finish){
+            ArrayList<ToDo> toDos1 = toDos;
+            String dt = "";
+            ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+            SQLiteDatabase database = openHelper.getReadableDatabase();
+            Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,Contract.TODO.COLUMN_DATE);
+            toDos.clear();
+            while(cursor.moveToNext()){
+                String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+                String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+                String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+                String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+                String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+                ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+
+                toDos.add(toDo);
+
+                adapter.notifyDataSetChanged();
+
+            }
+        }else if(item.getItemId()==R.id.none){
+            ArrayList<ToDo> toDos1 = toDos;
+            String dt = "";
+            ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+            SQLiteDatabase database = openHelper.getReadableDatabase();
+            Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
+            toDos.clear();
+            while(cursor.moveToNext()){
+                String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+                String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+                String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+                String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+                String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+                ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+
+                toDos.add(toDo);
+
+                adapter.notifyDataSetChanged();
+
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -268,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
 
 
-            ToDoOpenHelper openHelper = new ToDoOpenHelper(this);
+            ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
             SQLiteDatabase database = openHelper.getWritableDatabase();
 
             ContentValues contentValues = new ContentValues();
@@ -309,18 +375,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
         if(requestCode==3 && resultCode==4){
-            String title = data.getStringExtra("Title");
-            String desc = data.getStringExtra("Desc");
-            String date = data.getStringExtra("Date");
-            String time = data.getStringExtra("Time");
-            String dtCreated = data.getStringExtra("DTCreated");
+//            String title = data.getStringExtra("Title");
+//            String desc = data.getStringExtra("Desc");
+//            String date = data.getStringExtra("Date");
+//            String time = data.getStringExtra("Time");
+//            String dtCreated = data.getStringExtra("DTCreated");
+            long id = data.getLongExtra("ID",0);
+
+
+            //id = intent.getLongExtra("ID",0);
+            ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+            SQLiteDatabase database = openHelper.getReadableDatabase();
+            String[] selectionArgs = {id+""};
+            Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,Contract.TODO.COLUMN_ID+" = ?",selectionArgs,null,null,null);
+            cursor.moveToNext();
+            String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+            String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+            String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+            String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+            String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+
             ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+            toDo.setId(id);
             toDos.set(posToDel,toDo);
 
 
-            ToDoOpenHelper openHelper = new ToDoOpenHelper(this);
-            SQLiteDatabase database = openHelper.getWritableDatabase();
-            String[] selectionArgs = {id+""};
+
+
             ContentValues contentValues = new ContentValues();
             contentValues.put(Contract.TODO.COLUMN_TITLE,toDo.getTitle());
             contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,toDo.getDescription());
@@ -341,11 +423,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         ToDo toDo = toDos.get(i);
         Intent intent = new Intent(MainActivity.this,Details.class);
-        intent.putExtra("Title",toDo.getTitle());
-        intent.putExtra("Desc",toDo.getDescription());
-        intent.putExtra("Date",toDo.getDate());
-        intent.putExtra("Time",toDo.getTime());
-        intent.putExtra("DTCreated",toDo.getDtCreated());
+//        intent.putExtra("Title",toDo.getTitle());
+//        intent.putExtra("Desc",toDo.getDescription());
+//        intent.putExtra("Date",toDo.getDate());
+//        intent.putExtra("Time",toDo.getTime());
+//        intent.putExtra("DTCreated",toDo.getDtCreated());
+        intent.putExtra("ID",toDo.getId());
+        Log.i("IDMeri",id+"");
 
         id = toDo.getId();
         posToDel = i;
