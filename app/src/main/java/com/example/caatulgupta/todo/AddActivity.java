@@ -42,11 +42,11 @@ public class AddActivity extends AppCompatActivity {
         //dateTV = findViewById(R.id.dateTV);
         dateEditText = findViewById(R.id.dateEditText);
         timeEditText = findViewById(R.id.timeEditText);
-        dateEditText.setText(toString().valueOf(day)+"/"+toString().valueOf(month)+"/"+toString().valueOf(year));
+//        dateEditText.setText(toString().valueOf(day)+"/"+toString().valueOf(month)+"/"+toString().valueOf(year));
 //        if(hour>12){
 //            hour -= 12;
 //        }
-        timeEditText.setText(toString().valueOf(hour)+" : "+toString().valueOf(min));
+//        timeEditText.setText(toString().valueOf(hour)+" : "+toString().valueOf(min));
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +126,7 @@ public class AddActivity extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(i,i1,i2);
 //                String date = i+" "+i1+" "+i2;
-                dateEditText.setText(toString().valueOf(i)+" "+toString().valueOf(i1)+" "+toString().valueOf(i2));
+                dateEditText.setText(toString().valueOf(i)+" "+toString().valueOf(i1+1)+" "+toString().valueOf(i2));
             }
         },year,month,day);
         datePickerDialog.setTitle("Select Date");

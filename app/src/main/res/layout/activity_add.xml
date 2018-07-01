@@ -11,12 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/titleEditText"
+        android:layout_margin="20dp"
+        android:gravity="center"
         android:hint="Enter Title"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/descEditText"
+        android:layout_margin="20dp"
+        android:gravity="center"
         android:hint="Enter description"/>
 
     <!--<TextView-->
@@ -30,12 +34,19 @@
         android:layout_height="wrap_content"
         android:id="@+id/dateEditText"
         android:inputType="none"
+        android:focusable="false"
+        android:layout_margin="20dp"
+        android:gravity="center"
         android:hint="Enter date"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/timeEditText"
+        android:inputType="none"
+        android:focusable="false"
+        android:layout_margin="20dp"
+        android:gravity="center"
         android:hint="Enter time"/>
 
     <!--<Button-->
@@ -55,6 +66,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/button"
         android:text="ADD"
+        android:layout_margin="20dp"
         android:onClick="addTODO"/>
 
 </LinearLayout>

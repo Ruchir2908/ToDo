@@ -7,28 +7,41 @@
     android:orientation="vertical"
     tools:context=".EditDetails">
 
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/titleEditText"
+        android:gravity="center"
+        android:layout_margin="20dp"
         android:hint="Enter title"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/descEditText"
+        android:gravity="center"
+        android:layout_margin="20dp"
         android:hint="Enter description"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/dateEditText"
+        android:inputType="none"
+        android:focusable="false"
+        android:gravity="center"
+        android:layout_margin="20dp"
         android:hint="Enter date"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/timeEditText"
+        android:inputType="none"
+        android:focusable="false"
+        android:gravity="center"
+        android:layout_margin="20dp"
         android:hint="Enter time"/>
 
 
@@ -58,6 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save"
+        android:layout_margin="20dp"
         android:onClick="addTODO"/>
 
 </LinearLayout>

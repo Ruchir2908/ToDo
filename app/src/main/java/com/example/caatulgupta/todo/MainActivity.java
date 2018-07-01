@@ -267,7 +267,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
                 String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
 
+                long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
+
                 ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+                toDo.setId(id);
 
                 toDos.add(toDo);
 
@@ -290,7 +293,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
                 String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
 
+                long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
+
                 ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+                toDo.setId(id);
 
                 toDos.add(toDo);
 
@@ -311,8 +317,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
                 String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
 
-                ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+                long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
 
+                ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+                toDo.setId(id);
                 toDos.add(toDo);
 
                 adapter.notifyDataSetChanged();

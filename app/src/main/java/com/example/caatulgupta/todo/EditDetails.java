@@ -114,7 +114,7 @@ public class EditDetails extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(i,i1,i2);
 //                String date = i+" "+i1+" "+i2;
-                dateET.setText(toString().valueOf(i)+" "+toString().valueOf(i1)+" "+toString().valueOf(i2));
+                dateET.setText(toString().valueOf(i)+" "+toString().valueOf(i1+1)+" "+toString().valueOf(i2));
             }
         },year,month,day);
         datePickerDialog.setTitle("Select Date");
