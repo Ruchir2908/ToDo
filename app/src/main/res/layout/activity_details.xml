@@ -97,7 +97,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit"
+        android:textColor="@color/colorWhite"
         android:layout_margin="20dp"
-        android:onClick="editTODO"/>
+        android:onClick="editTODO"
+
+        android:background="@color/colorBlack"/>
 
 </LinearLayout>

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/wallpaper"
     tools:context=".EditDetails">
 
 
@@ -14,6 +15,8 @@
         android:id="@+id/titleEditText"
         android:gravity="center"
         android:layout_margin="20dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter title"/>
 
     <EditText
@@ -22,6 +25,8 @@
         android:id="@+id/descEditText"
         android:gravity="center"
         android:layout_margin="20dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter description"/>
 
     <EditText
@@ -32,6 +37,8 @@
         android:focusable="false"
         android:gravity="center"
         android:layout_margin="20dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter date"/>
 
     <EditText
@@ -42,6 +49,8 @@
         android:focusable="false"
         android:gravity="center"
         android:layout_margin="20dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter time"/>
 
 
@@ -72,6 +81,8 @@
         android:layout_height="wrap_content"
         android:text="Save"
         android:layout_margin="20dp"
+        android:background="@color/colorBlack"
+        android:textColor="@color/colorWhite"
         android:onClick="addTODO"/>
 
 </LinearLayout>

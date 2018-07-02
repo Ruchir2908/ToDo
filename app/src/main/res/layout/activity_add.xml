@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="@drawable/wallpaper"
     tools:context=".AddActivity">
 
     <EditText
@@ -13,6 +14,8 @@
         android:id="@+id/titleEditText"
         android:layout_margin="20dp"
         android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter Title"/>
 
     <EditText
@@ -21,6 +24,8 @@
         android:id="@+id/descEditText"
         android:layout_margin="20dp"
         android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter description"/>
 
     <!--<TextView-->
@@ -37,6 +42,8 @@
         android:focusable="false"
         android:layout_margin="20dp"
         android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter date"/>
 
     <EditText
@@ -47,6 +54,8 @@
         android:focusable="false"
         android:layout_margin="20dp"
         android:gravity="center"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
         android:hint="Enter time"/>
 
     <!--<Button-->
@@ -67,6 +76,8 @@
         android:id="@+id/button"
         android:text="ADD"
         android:layout_margin="20dp"
+        android:background="@color/colorBlack"
+        android:textColor="@color/colorWhite"
         android:onClick="addTODO"/>
 
 </LinearLayout>
