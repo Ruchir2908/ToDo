@@ -1,17 +1,25 @@
 package com.example.caatulgupta.todo;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.Telephony;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,10 +31,13 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Set;
 import java.util.zip.Inflater;
+
+import static android.content.Intent.ACTION_SEND;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -36,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ToDoAdapter adapter;
 //    View alertView = findViewById(R.id.alert);
     EditText etTitle, etDesc;
+    boolean sms = false;
 /*
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -180,7 +192,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }    */
 
 
+      if(ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED){
+          String[] permissions = {Manifest.permission.RECEIVE_SMS};
+          ActivityCompat.requestPermissions(MainActivity.this,permissions,1);
+      }
 
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode==1){
+            if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+                sms = true;
+            }
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -188,6 +216,26 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         getMenuInflater().inflate(R.menu.add_task,menu);
         return true;
     }
+
+//    BroadcastReceiver receiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if(sms==true) {
+//                String sender = "", msg = "";
+//                Bundle data = intent.getExtras();
+//                Object[] pdus = (Object[]) data.get("pdus");
+//                for (int i = 0; i < pdus.length; i++) {
+//                    SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
+//                    sender = smsMessage.getDisplayOriginatingAddress();
+//                    msg = smsMessage.getDisplayMessageBody();
+//                }
+//            }else{
+//                Toast.makeText(MainActivity.this, "Permission not granted", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    };
+//    IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+//    registerReceiver(receiver,filter);
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -247,9 +295,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             AlertDialog dialog = builder.create();
             dialog.show();
             */
-            Intent intent = new Intent(MainActivity.this,AddActivity.class);
-            startActivityForResult(intent,1);
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            if(action == ACTION_SEND){
+                String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+                intent.putExtra("Desc",text);
+                intent.putExtra("Title","Copied Text");
+                startActivityForResult(intent,1);
+            }else {
+                Intent newIntent = new Intent(MainActivity.this, AddActivity.class);
 
+                startActivityForResult(newIntent, 1);
+            }
 
         }
 
@@ -284,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             String dt = "";
             ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
             SQLiteDatabase database = openHelper.getReadableDatabase();
+            String order = Contract.TODO.COLUMN_DATE+" AND "+Contract.TODO.COLUMN_TIME;
             Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,Contract.TODO.COLUMN_DATE);
             toDos.clear();
             while(cursor.moveToNext()){
