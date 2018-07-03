@@ -1,6 +1,10 @@
 package com.example.caatulgupta.todo;
 
-public class ToDo {
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class ToDo implements Serializable {
 
     private long id;
     private String title;
@@ -8,6 +12,7 @@ public class ToDo {
     private String date;
     private String time;
     private String dtCreated;
+
 
     public long getId() {
         return id;

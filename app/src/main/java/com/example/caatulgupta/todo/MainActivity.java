@@ -48,10 +48,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //    View alertView = findViewById(R.id.alert);
     EditText etTitle, etDesc;
     boolean sms = false;
-/*
+
+    ToDoOpenHelper openHelper;
+    SQLiteDatabase database;
+
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-*/
+
     Calendar newCalendar = Calendar.getInstance();
     int month = newCalendar.get(Calendar.MONTH);
     int year = newCalendar.get(Calendar.YEAR);
@@ -70,17 +73,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-/*
+
         sharedPreferences = getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-*/
+
 //
 //        if(titles.size()!=0 && descs.size()!=0){
 //            for(int i=0;i<titles.size();i++){
 //                ToDo toDo = new ToDo()
 //            }
 //        }
+        openHelper = ToDoOpenHelper.getInstance(this);
+        database = openHelper.getWritableDatabase();
+
         ListView listView = findViewById(R.id.listView);
 //        for(int i=0;i<5;i++){
 //            ToDo toDo = new ToDo("First","temporary");
@@ -104,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     public void onClick(DialogInterface dialogInterface, int i) {
 
 
-                        ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(MainActivity.this);
-                        SQLiteDatabase database = openHelper.getWritableDatabase();
+                        openHelper = ToDoOpenHelper.getInstance(MainActivity.this);
+                        database = openHelper.getWritableDatabase();
                         String[] selectionArgs = {toDo.getId()+""};
                         database.delete(Contract.TODO.TABLE_NAME,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
 
@@ -192,10 +198,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }    */
 
 
-      if(ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED){
-          String[] permissions = {Manifest.permission.RECEIVE_SMS};
-          ActivityCompat.requestPermissions(MainActivity.this,permissions,1);
-      }
+
+
+//        BroadcastReceiver receiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                if(sms==true) {
+//                    String sender = "", msg = "";
+//                    Bundle data = intent.getExtras();
+//                    Object[] pdus = (Object[]) data.get("pdus");
+//                    for (int i = 0; i < pdus.length; i++) {
+//                        SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
+//                        sender = smsMessage.getDisplayOriginatingAddress();
+//                        msg = smsMessage.getDisplayMessageBody();
+//                    }
+//                }else{
+//                    Toast.makeText(MainActivity.this, "Permission not granted", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        };
+//        IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+//        registerReceiver(receiver,filter);
 
 
     }
@@ -217,25 +240,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return true;
     }
 
-//    BroadcastReceiver receiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if(sms==true) {
-//                String sender = "", msg = "";
-//                Bundle data = intent.getExtras();
-//                Object[] pdus = (Object[]) data.get("pdus");
-//                for (int i = 0; i < pdus.length; i++) {
-//                    SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
-//                    sender = smsMessage.getDisplayOriginatingAddress();
-//                    msg = smsMessage.getDisplayMessageBody();
-//                }
-//            }else{
-//                Toast.makeText(MainActivity.this, "Permission not granted", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    };
-//    IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
-//    registerReceiver(receiver,filter);
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -295,18 +300,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             AlertDialog dialog = builder.create();
             dialog.show();
             */
-            Intent intent = getIntent();
-            String action = intent.getAction();
-            if(action == ACTION_SEND){
-                String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-                intent.putExtra("Desc",text);
-                intent.putExtra("Title","Copied Text");
-                startActivityForResult(intent,1);
-            }else {
+
                 Intent newIntent = new Intent(MainActivity.this, AddActivity.class);
 
                 startActivityForResult(newIntent, 1);
+
+
+        }
+        if(item.getItemId()==R.id.sms){
+            if(item.isChecked()){
+                item.setChecked(false);
+                
+            }else if(!item.isChecked()){
+                item.setChecked(true);
+                if(ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED){
+                    String[] permissions = {Manifest.permission.RECEIVE_SMS};
+                    ActivityCompat.requestPermissions(MainActivity.this,permissions,1);
+                }
             }
+
 
         }
 
@@ -391,28 +403,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode==1 && resultCode==2){
-            String title = data.getStringExtra("Title");
-            String desc = data.getStringExtra("Desc");
-            String date = data.getStringExtra("Date");
-            String time = data.getStringExtra("Time");
-            String dtCreated = data.getStringExtra("DTCreated");
-
-            ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+//            String title = data.getStringExtra("Title");
+//            String desc = data.getStringExtra("Desc");
+//            String date = data.getStringExtra("Date");
+//            String time = data.getStringExtra("Time");
+//            String dtCreated = data.getStringExtra("DTCreated");
 
 
-            ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
-            SQLiteDatabase database = openHelper.getWritableDatabase();
+            ToDo toDo = (ToDo) data.getSerializableExtra("ID");
+//
+//            String selectionArgs[] = {id+""};
+//            Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,Contract.TODO.COLUMN_ID+" = ?",selectionArgs,null,null,null);
+//            while (cursor.moveToNext()){
+//                String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+//                String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+//                String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+//                String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+//                String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+//                ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+//                toDo.setId(id);
+//                toDos.add(toDo);
+//
+//            }
 
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(Contract.TODO.COLUMN_TITLE,toDo.getTitle());
-            contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,toDo.getDescription());
-            contentValues.put(Contract.TODO.COLUMN_DATE,toDo.getDate());
-            contentValues.put(Contract.TODO.COLUMN_TIME,toDo.getTime());
-            contentValues.put(Contract.TODO.COLUMN_DTCREATED,toDo.getDtCreated());
-
-            long id = database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
-            toDo.setId(id);
             toDos.add(toDo);
+//            ToDo toDo = new ToDo();
+//            toDo.setId(id);
+//            toDos.add(toDo);
 
             /*
             stringBuilderTitle = new StringBuilder();

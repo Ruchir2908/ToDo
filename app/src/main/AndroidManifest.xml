@@ -17,14 +17,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
 
-                <action android:name="android.intent.action.SEND"/>
-
-                <data android:mimeType="text/plain"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-
-            </intent-filter>
         </activity>
         <activity
             android:name=".Details"
@@ -34,14 +27,27 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".AddActivity" >
+            <intent-filter>
 
+                <action android:name="android.intent.action.SEND"/>
+
+                <data android:mimeType="text/plain"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+            </intent-filter>
         </activity>
         <activity android:name=".EditDetails" />
 
         <receiver
             android:name=".MyReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+
+        </receiver>
     </application>
 
 </manifest>

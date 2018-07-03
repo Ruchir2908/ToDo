@@ -3,9 +3,11 @@ package com.example.caatulgupta.todo;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -33,15 +36,17 @@ public class AddActivity extends AppCompatActivity {
     int day = newCalendar.get(Calendar.DAY_OF_MONTH);
     int hour = newCalendar.get(Calendar.HOUR_OF_DAY);
     int min = newCalendar.get(Calendar.MINUTE);
-    String dtCrerated = toString().valueOf(day)+"/"+toString().valueOf(month)+"/"+toString().valueOf(year)+" at "+toString().valueOf(hour)+":"+toString().valueOf(min);
+    String dtCrerated = toString().valueOf(day)+"/"+toString().valueOf(month + 1)+"/"+toString().valueOf(year)+" at "+toString().valueOf(hour)+":"+toString().valueOf(min);
 
 //    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
+//boolean finish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+//        finish = false;
+
 
         titleEditText = findViewById(R.id.titleEditText);
         descEditText = findViewById(R.id.descEditText);
@@ -84,6 +89,15 @@ public class AddActivity extends AppCompatActivity {
                 addTIME(view);
             }
         });
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        if(action == ACTION_SEND){
+            String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+            descEditText.setText(text);
+            titleEditText.setText("Copied");
+//            finish = true;
+        }
 
 
     }
@@ -164,13 +178,35 @@ public class AddActivity extends AppCompatActivity {
         String date = dateEditText.getText().toString();
         String time = timeEditText.getText().toString();
 
-        Intent intent = new Intent();
-        intent.putExtra("Title",title);
-        intent.putExtra("Desc",desc);
-        intent.putExtra("Date",date);
-        intent.putExtra("Time",time);
-        intent.putExtra("DTCreated",dtCrerated);
+
+        ToDo toDo = new ToDo(title,desc,date,time,dtCrerated);
+
+
+        ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
+        SQLiteDatabase database = openHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Contract.TODO.COLUMN_TITLE,title);
+        contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,desc);
+        contentValues.put(Contract.TODO.COLUMN_DATE,date);
+        contentValues.put(Contract.TODO.COLUMN_TIME,time);
+        contentValues.put(Contract.TODO.COLUMN_DTCREATED,dtCrerated);
+
+        long id = database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
+        toDo.setId(id);
+        Intent intent = getIntent();
+        intent.putExtra("ID",toDo);
+        Toast.makeText(this, "ToDo Created", Toast.LENGTH_SHORT).show();
+
+//        Intent intent = new Intent();
+//        intent.putExtra("Title",title);
+//        intent.putExtra("Desc",desc);
+//        intent.putExtra("Date",date);
+//        intent.putExtra("Time",time);
+//        intent.putExtra("DTCreated",dtCrerated);
         setResult(2,intent);
-        finish();
+//        if(!finish) {
+            finish();
+//        }
     }
 }
