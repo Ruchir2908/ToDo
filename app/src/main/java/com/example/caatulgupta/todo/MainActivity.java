@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ToDoAdapter adapter;
 //    View alertView = findViewById(R.id.alert);
     EditText etTitle, etDesc;
-    boolean sms = false;
+    boolean sms;
 
     ToDoOpenHelper openHelper;
     SQLiteDatabase database;
@@ -176,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
 */
+
+
 
 
       /*  String t = "",d = "";
@@ -308,17 +310,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }
         if(item.getItemId()==R.id.sms){
+
             if(item.isChecked()){
                 item.setChecked(false);
+                sms = false;
                 
             }else if(!item.isChecked()){
                 item.setChecked(true);
                 if(ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED){
                     String[] permissions = {Manifest.permission.RECEIVE_SMS};
                     ActivityCompat.requestPermissions(MainActivity.this,permissions,1);
+                    sms = true;
                 }
             }
-
+            editor.putBoolean("SMS",sms);
+            editor.commit();
 
         }
 
