@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.i("MainActivity1","MainActivity onCreate()");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -527,4 +530,39 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         startActivityForResult(intent,3);
     }
 
+    @Override
+    protected void onStart() {
+        Log.i("MainActivity1","MainActivity onStart()");
+        super.onStart();
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.i("MainActivity1","MainActivity onRestart()");
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i("MainActivity1","MainActivity onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.i("MainActivity1","MainActivity onPause()");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i("MainActivity1","MainActivity onStop()");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("MainActivity1","MainActivity onDestroy()");
+        super.onDestroy();
+    }
 }

@@ -1,12 +1,17 @@
 package com.example.caatulgupta.todo;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
@@ -31,6 +36,7 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
 
         sharedPreferences = context.getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -57,6 +63,18 @@ public class MyReceiver extends BroadcastReceiver {
             database.insert(Contract.TODO.TABLE_NAME, null, contentValues);
 
             Toast.makeText(context, "ToDo Created", Toast.LENGTH_LONG).show();
+
+            NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel("myChannelId", "ToDoChannel", NotificationManager.IMPORTANCE_HIGH);
+                manager.createNotificationChannel(channel);
+            }
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"myChannelId");
+            builder.setContentTitle("ToDo");
+            builder.setContentText("ToDo created from "+sender);
+            builder.setSmallIcon(R.drawable.ic_launcher_foreground);
+            Notification notification = builder.build();
+            manager.notify(1,notification);
         }
     }
 }

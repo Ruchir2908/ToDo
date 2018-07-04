@@ -19,6 +19,9 @@ public class Details extends AppCompatActivity {
     long id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.i("DetailActivity","DetailActivity onCreate()");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
@@ -103,5 +106,35 @@ public class Details extends AppCompatActivity {
             intent.putExtra("ID",id);
             setResult(4,intent);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        Log.i("DetailActivity","DetailActivity onStart()");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i("DetailActivity","DetailActivity onResume()");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.i("DetailActivity","DetailActivity onPause()");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i("DetailActivity","DetailActivity onStop()");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("DetailActivity","DetailActivity onDestroy()");
+        super.onDestroy();
     }
 }
