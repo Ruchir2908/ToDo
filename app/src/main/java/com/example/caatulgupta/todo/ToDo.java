@@ -12,7 +12,15 @@ public class ToDo implements Serializable {
     private String date;
     private String time;
     private String dtCreated;
+    private int star;
 
+    public int isStar() {
+        return star;
+    }
+
+    public void setStar(int star) {
+        this.star = star;
+    }
 
     public long getId() {
         return id;
@@ -30,12 +38,6 @@ public class ToDo implements Serializable {
         this.dtCreated = dtCreated;
     }
 
-    public ToDo(String title, String description, String date, String time) {
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.time = time;
-    }
 
     public ToDo(String title, String description, String date, String time,String dtCreated) {
         this.title = title;
@@ -43,6 +45,7 @@ public class ToDo implements Serializable {
         this.date = date;
         this.time = time;
         this.dtCreated = dtCreated;
+        this.star = 0;
     }
 
     public String getTitle() {

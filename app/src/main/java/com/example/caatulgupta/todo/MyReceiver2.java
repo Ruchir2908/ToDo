@@ -32,7 +32,6 @@ public class MyReceiver2 extends BroadcastReceiver {
         Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,Contract.TODO.COLUMN_ID+" = ?",selectionArgs,null,null,null);
         cursor.moveToNext();
         builder.setContentText(cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE)));
-
         builder.setSmallIcon(R.drawable.ic_launcher_foreground);
         Intent intent1 = new Intent(context,Details.class);
         intent1.putExtra("ID",id);

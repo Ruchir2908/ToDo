@@ -54,7 +54,7 @@ public class AddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add);
 //        finish = false;
 
-        newCalendar.set(year,month,day,hour,min);
+
 
         titleEditText = findViewById(R.id.titleEditText);
         descEditText = findViewById(R.id.descEditText);
@@ -78,7 +78,7 @@ public class AddActivity extends AppCompatActivity {
 //            day = nextDay-29;
 //            month++;
 //        }
-        dateEditText.setText(toString().valueOf(day)+"/"+toString().valueOf(month+2)+"/"+toString().valueOf(year));
+        dateEditText.setText(toString().valueOf(day)+"/"+toString().valueOf(month+1)+"/"+toString().valueOf(year));
 //        if(hour>12){
 //            hour -= 12;
 //        }
@@ -143,8 +143,8 @@ public class AddActivity extends AppCompatActivity {
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                int hour = i;
-                int min = i1;
+                hour = i;
+                min = i1;
 //                if(hour>12){
 //                    hour -= 12;
 //                }
@@ -176,6 +176,7 @@ public class AddActivity extends AppCompatActivity {
                 dateEditText.setText(toString().valueOf(i)+" "+toString().valueOf(i1+1)+" "+toString().valueOf(i2));
             }
         },year,month,day);
+
         datePickerDialog.setTitle("Select Date");
         datePickerDialog.show();
     }
@@ -186,6 +187,7 @@ public class AddActivity extends AppCompatActivity {
         String date = dateEditText.getText().toString();
         String time = timeEditText.getText().toString();
 
+        newCalendar.set(year,month,day,hour,min);
 
         ToDo toDo = new ToDo(title,desc,date,time,dtCrerated);
 
@@ -199,6 +201,7 @@ public class AddActivity extends AppCompatActivity {
         contentValues.put(Contract.TODO.COLUMN_DATE,date);
         contentValues.put(Contract.TODO.COLUMN_TIME,time);
         contentValues.put(Contract.TODO.COLUMN_DTCREATED,dtCrerated);
+        contentValues.put(Contract.TODO.COLUMN_STAR,0);
 
         id = database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
         toDo.setId(id);

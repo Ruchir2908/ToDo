@@ -43,12 +43,12 @@ public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        newCalendar.set(year,month+2,day,hour,min);
-
         long id;
 
         sharedPreferences = context.getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
+        newCalendar.set(year,month+2,day,hour,min);
 
         boolean sms = sharedPreferences.getBoolean("SMS",true);
         if(sms) {

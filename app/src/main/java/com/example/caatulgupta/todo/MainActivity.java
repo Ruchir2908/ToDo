@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -41,9 +42,10 @@ import java.util.zip.Inflater;
 
 import static android.content.Intent.ACTION_SEND;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, ToDoItemClickListener {
 
     ArrayList<ToDo> toDos = new ArrayList<>();
+    ToDoItemClickListener clickListener;
     int posToDel = 0;
     long id;
     ToDoAdapter adapter;
@@ -53,9 +55,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     ToDoOpenHelper openHelper;
     SQLiteDatabase database;
+    Cursor cursor;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+
+//     Button starButton = findViewById(R.id.starButton);
 
     Calendar newCalendar = Calendar.getInstance();
     int month = newCalendar.get(Calendar.MONTH);
@@ -82,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         sharedPreferences = getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
+        final Button starButton = findViewById(R.id.starButton);
+        final int star;
 
         AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
         Intent intent1 = new Intent(this,MainActivity.class);
@@ -102,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //            ToDo toDo = new ToDo("First","temporary");
 //            toDos.add(toDo);
 //        }
-        adapter = new ToDoAdapter(this,toDos);
+        adapter = new ToDoAdapter(this,toDos,clickListener);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -147,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         ToDoOpenHelper toDoOpenHelper = ToDoOpenHelper.getInstance(this);
         SQLiteDatabase database = toDoOpenHelper.getReadableDatabase();
-        Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
+        cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
         while(cursor.moveToNext()){
             String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
             String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
@@ -327,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 
             }else if(!item.isChecked()){
                 item.setChecked(true);
-                if(ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)== PackageManager.PERMISSION_DENIED){
+                if(ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_DENIED){
                     String[] permissions = {Manifest.permission.RECEIVE_SMS};
                     ActivityCompat.requestPermissions(MainActivity.this,permissions,1);
                     sms = true;
@@ -520,7 +527,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        final int star;
         ToDo toDo = toDos.get(i);
+        final Button starButton = findViewById(R.id.starButton);
         Intent intent = new Intent(MainActivity.this,Details.class);
 //        intent.putExtra("Title",toDo.getTitle());
 //        intent.putExtra("Desc",toDo.getDescription());
@@ -571,5 +580,35 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onDestroy() {
         Log.i("MainActivity1","MainActivity onDestroy()");
         super.onDestroy();
+    }
+
+    @Override
+    public void rowButtonClicked(View view, int position) {
+        Toast.makeText(this, position, Toast.LENGTH_SHORT).show();
+        Button starButton = (Button)view;
+        ToDo todo = toDos.get(position);
+        long id = todo.getId();
+        openHelper = ToDoOpenHelper.getInstance(this);
+        database = openHelper.getWritableDatabase();
+        String[] selectionArgs = {id+""};
+        cursor = database.query(Contract.TODO.TABLE_NAME,null,Contract.TODO.COLUMN_ID+" = ?",selectionArgs,null,null,null);
+        cursor.moveToNext();
+        String[] whereArgs = {id+""};
+        ContentValues contentValues = new ContentValues();
+        if(todo.isStar()==0){
+            todo.setStar(1);
+            starButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+            starButton.setBackgroundColor(getResources().getColor(R.color.colorBlack));
+            contentValues.put(Contract.TODO.COLUMN_STAR,1);
+            database.update(Contract.TODO.TABLE_NAME,contentValues,Contract.TODO.COLUMN_ID+" = ?",whereArgs);
+        }else if(todo.isStar()==1){
+            todo.setStar(0);
+            starButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+            starButton.setBackgroundColor(getResources().getColor(R.color.colorBlack));
+            contentValues.put(Contract.TODO.COLUMN_STAR,0);
+            database.update(Contract.TODO.TABLE_NAME,contentValues,Contract.TODO.COLUMN_ID+" = ?",whereArgs);
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

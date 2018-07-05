@@ -22,7 +22,7 @@ public class ToDoOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String todoSql = "CREATE TABLE "+Contract.TODO.TABLE_NAME+" ( "+Contract.TODO.COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+Contract.TODO.COLUMN_TITLE+" TEXT, "+Contract.TODO.COLUMN_DESCRIPTION+" TEXT, "+Contract.TODO.COLUMN_DATE+" TEXT, "+Contract.TODO.COLUMN_TIME+" TEXT, "+Contract.TODO.COLUMN_DTCREATED+" TEXT )";
+        String todoSql = "CREATE TABLE "+Contract.TODO.TABLE_NAME+" ( "+Contract.TODO.COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+Contract.TODO.COLUMN_TITLE+" TEXT, "+Contract.TODO.COLUMN_DESCRIPTION+" TEXT, "+Contract.TODO.COLUMN_DATE+" TEXT, "+Contract.TODO.COLUMN_TIME+" TEXT, "+Contract.TODO.COLUMN_DTCREATED+" TEXT , "+Contract.TODO.COLUMN_STAR+" INTEGER )";
         sqLiteDatabase.execSQL(todoSql);
     }
 

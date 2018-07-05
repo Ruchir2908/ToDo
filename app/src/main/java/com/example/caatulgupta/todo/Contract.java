@@ -11,6 +11,7 @@ public class Contract {
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_TIME = "time";
         public static final String COLUMN_DTCREATED = "dtCreated";
+        public static final String COLUMN_STAR = "star";
         public static final String DATABSE_NAME = "todo_db";
         public static final int VERSION = 1;
     }
