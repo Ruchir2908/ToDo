@@ -1,6 +1,8 @@
 package com.example.caatulgupta.todo;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -12,6 +14,7 @@ import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
@@ -38,6 +41,10 @@ public class AddActivity extends AppCompatActivity {
     int min = newCalendar.get(Calendar.MINUTE);
     String dtCrerated = toString().valueOf(day)+"/"+toString().valueOf(month + 1)+"/"+toString().valueOf(year)+" at "+toString().valueOf(hour)+":"+toString().valueOf(min);
 
+
+
+    long id;
+
 //    AlertDialog.Builder builder = new AlertDialog.Builder(this);
 //boolean finish;
 
@@ -47,6 +54,7 @@ public class AddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add);
 //        finish = false;
 
+        newCalendar.set(year,month,day,hour,min);
 
         titleEditText = findViewById(R.id.titleEditText);
         descEditText = findViewById(R.id.descEditText);
@@ -192,11 +200,18 @@ public class AddActivity extends AppCompatActivity {
         contentValues.put(Contract.TODO.COLUMN_TIME,time);
         contentValues.put(Contract.TODO.COLUMN_DTCREATED,dtCrerated);
 
-        long id = database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
+        id = database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
         toDo.setId(id);
         Intent intent = getIntent();
         intent.putExtra("ID",toDo);
         Toast.makeText(this, "ToDo Created", Toast.LENGTH_SHORT).show();
+
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(this,MyReceiver2.class);
+        intent1.putExtra("ID",id);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1,intent1,0);
+        Log.i("Alarm",toString().valueOf(newCalendar.getTimeInMillis()));
+        alarmManager.set(AlarmManager.RTC_WAKEUP,newCalendar.getTimeInMillis(),pendingIntent);
 
 //        Intent intent = new Intent();
 //        intent.putExtra("Title",title);

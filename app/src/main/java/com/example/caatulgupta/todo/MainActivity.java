@@ -1,6 +1,8 @@
 package com.example.caatulgupta.todo;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -80,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         sharedPreferences = getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
+
+        AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent1 = new Intent(this,MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,2,intent1,0);
+        alarmManager.cancel(pendingIntent);
 
 //
 //        if(titles.size()!=0 && descs.size()!=0){
@@ -521,7 +528,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //        intent.putExtra("Time",toDo.getTime());
 //        intent.putExtra("DTCreated",toDo.getDtCreated());
         intent.putExtra("ID",toDo.getId());
-        Log.i("IDMeri",id+"");
+//        Log.i("IDMeri",id+"");
 
         id = toDo.getId();
         posToDel = i;
