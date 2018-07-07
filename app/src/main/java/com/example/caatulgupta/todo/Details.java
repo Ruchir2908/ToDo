@@ -4,19 +4,26 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
+
 
 public class Details extends AppCompatActivity {
 
     TextView titleTV,descTV,dateTV,timeTV,dtCreatedTV;
     String title,desc,date,time,dtCreated;
     long id;
+    boolean delete = true;
+    SQLiteDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -40,7 +47,7 @@ public class Details extends AppCompatActivity {
 
         id = intent.getLongExtra("ID",-1);
         ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
-        SQLiteDatabase database = openHelper.getReadableDatabase();
+        database = openHelper.getReadableDatabase();
         String[] selectionArgs = {id+""};
         Log.i("IDMeriii",id+"");
         Cursor cursor = database.query(Contract.TODO.TABLE_NAME,null,Contract.TODO.COLUMN_ID+" = ?",selectionArgs,null,null,null);
@@ -63,6 +70,27 @@ public class Details extends AppCompatActivity {
         timeTV.setText(time);
 //        dateTV.setText(date);
 //        timeTV.setText(time);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent1 = new Intent(Details.this,MainActivity.class);
+                String[] selectionArgs = {id+""};
+                database.delete(Contract.TODO.TABLE_NAME,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
+                startActivity(intent1);
+                finish();
+
+                Snackbar.make(view, "Deleting...", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        }).show();
+            }
+        });
     }
 
     public void editTODO(View view){

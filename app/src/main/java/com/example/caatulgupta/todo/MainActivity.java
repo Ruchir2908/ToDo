@@ -14,13 +14,19 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,12 +51,9 @@ import static android.content.Intent.ACTION_SEND;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, ToDoItemClickListener {
 
     ArrayList<ToDo> toDos = new ArrayList<>();
-    ToDoItemClickListener clickListener;
     int posToDel = 0;
     long id;
     ToDoAdapter adapter;
-//    View alertView = findViewById(R.id.alert);
-    EditText etTitle, etDesc;
     boolean sms;
 
     ToDoOpenHelper openHelper;
@@ -60,15 +63,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
-//     Button starButton = findViewById(R.id.starButton);
-
-    Calendar newCalendar = Calendar.getInstance();
-    int month = newCalendar.get(Calendar.MONTH);
-    int year = newCalendar.get(Calendar.YEAR);
-    int day = newCalendar.get(Calendar.DAY_OF_MONTH);
-    int hour = newCalendar.get(Calendar.HOUR_OF_DAY);
-    int min = newCalendar.get(Calendar.MINUTE);
-//    String dtCreated =  toString().valueOf(day)+"/"+toString().valueOf(month)+"/"+toString().valueOf(year)+" at "+toString().valueOf(hour)+":"+toString().valueOf(min);
 /*
     StringBuilder stringBuilderTitle = new StringBuilder();
     StringBuilder stringBuilderDesc = new StringBuilder();
@@ -86,9 +80,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         sharedPreferences = getSharedPreferences("todo",MODE_PRIVATE);
         editor = sharedPreferences.edit();
-
-        final Button starButton = findViewById(R.id.starButton);
-        final int star;
 
         AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
         Intent intent1 = new Intent(this,MainActivity.class);
@@ -109,12 +100,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //            ToDo toDo = new ToDo("First","temporary");
 //            toDos.add(toDo);
 //        }
-        adapter = new ToDoAdapter(this,toDos,clickListener);
+        adapter = new ToDoAdapter(this,toDos,this);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public boolean onItemLongClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 final ToDo toDo = toDos.get(i);
                 final int pos = i;
 
@@ -136,13 +127,45 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         toDos.remove(pos);
                         adapter.notifyDataSetChanged();
-                        Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_LONG).show();
+//                        Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_SHORT).show();
+                        Snackbar.make(view,"Deleted",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                toDos.add(toDo);
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(Contract.TODO.COLUMN_TITLE,toDo.getTitle());
+                                contentValues.put(Contract.TODO.COLUMN_DESCRIPTION,toDo.getDescription());
+                                contentValues.put(Contract.TODO.COLUMN_DATE,toDo.getDate());
+                                contentValues.put(Contract.TODO.COLUMN_TIME,toDo.getTime());
+                                contentValues.put(Contract.TODO.COLUMN_DTCREATED,toDo.getDtCreated());
+                                contentValues.put(Contract.TODO.COLUMN_ID,toDo.getId());
+                                database.insert(Contract.TODO.TABLE_NAME,null,contentValues);
+
+                                toDos.clear();
+                                cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
+                                while(cursor.moveToNext()){
+                                    String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+                                    String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+                                    String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+                                    String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+                                    String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+                                    long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
+
+                                    ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+                                    toDo.setId(id);
+                                    toDos.add(toDo);
+                                    adapter.notifyDataSetChanged();
+
+                                }
+                            }
+                        }).show();
                     }
                 });
                 builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(MainActivity.this,"Deletion Cancelled",Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this,"Deletion Cancelled",Toast.LENGTH_SHORT).show();
                     }
                 });
                 AlertDialog dialog = builder.create();
@@ -170,6 +193,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }
         cursor.close();
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newIntent = new Intent(MainActivity.this, AddActivity.class);
+
+                startActivityForResult(newIntent, 1);
+            }
+        });
 /*
         String title = sharedPreferences.getString("Title",null);
         String desc = sharedPreferences.getString("Desc",null);
@@ -241,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -582,9 +620,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onDestroy();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void rowButtonClicked(View view, int position) {
-        Toast.makeText(this, position, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,position+"", Toast.LENGTH_SHORT).show();
         Button starButton = (Button)view;
         ToDo todo = toDos.get(position);
         long id = todo.getId();
@@ -596,19 +635,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String[] whereArgs = {id+""};
         ContentValues contentValues = new ContentValues();
         if(todo.isStar()==0){
+            Log.i("STAR","VALUE BEFORE: "+todo.isStar());
             todo.setStar(1);
-            starButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
-            starButton.setBackgroundColor(getResources().getColor(R.color.colorBlack));
+            Log.i("STAR","VALUE After: "+todo.isStar());
+            starButton.setBackgroundResource(android.R.drawable.star_on);
             contentValues.put(Contract.TODO.COLUMN_STAR,1);
             database.update(Contract.TODO.TABLE_NAME,contentValues,Contract.TODO.COLUMN_ID+" = ?",whereArgs);
         }else if(todo.isStar()==1){
+            Log.i("STAR","VALUE BEFORE: "+todo.isStar());
             todo.setStar(0);
-            starButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+            starButton.setText("STAR");
+            Log.i("STAR","VALUE After: "+todo.isStar());
+            starButton.setBackgroundResource(android.R.drawable.star_off);
             starButton.setBackgroundColor(getResources().getColor(R.color.colorBlack));
+            starButton.setTextColor(getResources().getColor(R.color.colorWhite));
             contentValues.put(Contract.TODO.COLUMN_STAR,0);
             database.update(Contract.TODO.TABLE_NAME,contentValues,Contract.TODO.COLUMN_ID+" = ?",whereArgs);
         }
-
         adapter.notifyDataSetChanged();
     }
 }

@@ -70,14 +70,25 @@
         <!--android:text="Add Time"-->
         <!--android:onClick="addTIME"/>-->
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/button"-->
+        <!--android:text="ADD"-->
+        <!--android:layout_margin="20dp"-->
+        <!--android:background="@color/colorBlack"-->
+        <!--android:textColor="@color/colorWhite"-->
+        <!--android:onClick="addTODO"/>-->
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/button"
-        android:text="ADD"
-        android:layout_margin="20dp"
-        android:background="@color/colorBlack"
-        android:textColor="@color/colorWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:baselineAlignBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        app:srcCompat="@android:drawable/ic_menu_save"
         android:onClick="addTODO"/>
+
 
 </LinearLayout>
