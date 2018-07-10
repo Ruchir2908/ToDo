@@ -211,7 +211,7 @@ public class AddActivity extends AppCompatActivity {
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         Intent intent1 = new Intent(this,MyReceiver2.class);
-        intent1.putExtra("ID",id);
+        intent1.putExtra("ID1",id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1,intent1,0);
         Log.i("Alarm",toString().valueOf(newCalendar.getTimeInMillis()));
         alarmManager.set(AlarmManager.RTC_WAKEUP,newCalendar.getTimeInMillis(),pendingIntent);

@@ -63,6 +63,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
+    public void readFromDatabase(){
+        toDos.clear();
+        ToDoOpenHelper toDoOpenHelper = ToDoOpenHelper.getInstance(this);
+        SQLiteDatabase database = toDoOpenHelper.getReadableDatabase();
+        cursor = database.query(Contract.TODO.TABLE_NAME,null,null,null,null,null,null);
+        while(cursor.moveToNext()){
+            String title = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE));
+            String desc = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DESCRIPTION));
+            String date = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DATE));
+            String time = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TIME));
+            String dtCreated = cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_DTCREATED));
+
+            long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO.COLUMN_ID));
+
+            ToDo toDo = new ToDo(title,desc,date,time,dtCreated);
+            toDo.setId(id);
+            toDos.add(toDo);
+
+        }
+        cursor.close();
+        adapter.notifyDataSetChanged();
+    }
+
 /*
     StringBuilder stringBuilderTitle = new StringBuilder();
     StringBuilder stringBuilderDesc = new StringBuilder();
@@ -581,6 +604,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         posToDel = i;
 //        intent.putExtra("Time",toDo.getTime());
 //        intent.putExtra("Date",toDo.getDate());
+
         startActivityForResult(intent,3);
     }
 
@@ -598,6 +622,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     protected void onResume() {
+        readFromDatabase();
         Log.i("MainActivity1","MainActivity onResume()");
         super.onResume();
     }

@@ -79,14 +79,17 @@ public class Details extends AppCompatActivity {
                 Intent intent1 = new Intent(Details.this,MainActivity.class);
                 String[] selectionArgs = {id+""};
                 database.delete(Contract.TODO.TABLE_NAME,Contract.TODO.COLUMN_ID+" = ?",selectionArgs);
-                startActivity(intent1);
+
+//                adapter.notifyDataSetChanged();
+//                startActivity(intent1);
                 finish();
+//                finishActivity(3);
 
                 Snackbar.make(view, "Deleting...", Snackbar.LENGTH_LONG)
                         .setAction("UNDO", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-
+                                //firse database mein add krna h jaise main activity mein kiya h
                             }
                         }).show();
             }

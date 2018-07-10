@@ -16,7 +16,7 @@ public class MyReceiver2 extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        long id = intent.getLongExtra("ID",-1);
+        long id = intent.getLongExtra("ID1",-1);
 
         NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
