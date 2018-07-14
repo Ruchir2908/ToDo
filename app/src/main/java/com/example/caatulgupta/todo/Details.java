@@ -45,7 +45,7 @@ public class Details extends AppCompatActivity {
 //        time = intent.getStringExtra("Time");
 //        dtCreated = intent.getStringExtra("DTCreated");
 
-        id = intent.getLongExtra("ID",-1);
+        id = intent.getLongExtra("ID2",-1);
         ToDoOpenHelper openHelper = ToDoOpenHelper.getInstance(this);
         database = openHelper.getReadableDatabase();
         String[] selectionArgs = {id+""};

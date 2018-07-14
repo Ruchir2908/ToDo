@@ -34,7 +34,7 @@ public class MyReceiver2 extends BroadcastReceiver {
         builder.setContentText(cursor.getString(cursor.getColumnIndex(Contract.TODO.COLUMN_TITLE)));
         builder.setSmallIcon(R.drawable.ic_launcher_foreground);
         Intent intent1 = new Intent(context,Details.class);
-        intent1.putExtra("ID",id);
+        intent1.putExtra("ID2",id);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,2,intent1,0);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();

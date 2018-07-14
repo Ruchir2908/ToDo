@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.security.Permission;
 import java.util.ArrayList;
@@ -109,6 +110,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         PendingIntent pendingIntent = PendingIntent.getActivity(this,2,intent1,0);
         alarmManager.cancel(pendingIntent);
 
+        boolean sms = sharedPreferences.getBoolean("SMS",false);
+
+        ToggleButton toggleButton = findViewById(R.id.sms);
+        if(toggleButton!=null && sms){
+            toggleButton.setEnabled(true);
+        }
 //
 //        if(titles.size()!=0 && descs.size()!=0){
 //            for(int i=0;i<titles.size();i++){
@@ -308,6 +315,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if(requestCode==1){
             if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
                 sms = true;
+                editor.putBoolean("SMS",sms);
+                editor.commit();
             }
         }
 
@@ -388,6 +397,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }
         if(item.getItemId()==R.id.sms){
+
+
 
             if(item.isChecked()){
                 item.setChecked(false);
