@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 //        intent.putExtra("Date",toDo.getDate());
 //        intent.putExtra("Time",toDo.getTime());
 //        intent.putExtra("DTCreated",toDo.getDtCreated());
-        intent.putExtra("ID",toDo.getId());
+        intent.putExtra("ID2",toDo.getId());
 //        Log.i("IDMeri",id+"");
 
         id = toDo.getId();
